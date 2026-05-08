@@ -1,0 +1,119 @@
+@startuml
+skinparam linetype ortho
+
+entity "VenueRoom" as room {
+  * room_id : VARCHAR(10) <<PK>>
+  --
+  venue_room : VARCHAR(50)
+  capacity : INT
+}
+
+entity "Promoter" as promoter {
+  * promoter_id : VARCHAR(10) <<PK>>
+  --
+  promoter_name : VARCHAR(100)
+}
+
+entity "VenueEvent" as event {
+  * event_id : VARCHAR(10) <<PK>>
+  --
+  event_date : DATE
+  start_time : TIME
+  event_type : VARCHAR(50)
+  genre : VARCHAR(50)
+  * room_id : VARCHAR(10) <<FK>>
+  base_ticket_price : DECIMAL(6,2)
+  * promoter_id : VARCHAR(10) <<FK>>
+  staffing_cost : DECIMAL(8,2)
+  security_cost : DECIMAL(8,2)
+  venue_overhead : DECIMAL(8,2)
+}
+
+entity "Artist" as artist {
+  * artist_id : VARCHAR(10) <<PK>>
+  --
+  artist_name : VARCHAR(100)
+  genre : VARCHAR(50)
+  origin : VARCHAR(100)
+  typical_fee : DECIMAL(8,2)
+}
+
+entity "EventArtist" as ea {
+  * event_artist_id : VARCHAR(10) <<PK>>
+  --
+  * event_id : VARCHAR(10) <<FK>>
+  * artist_id : VARCHAR(10) <<FK>>
+  artist_fee_paid : DECIMAL(8,2)
+  set_order : INT
+}
+
+entity "Customer" as customer {
+  * customer_id : VARCHAR(10) <<PK>>
+  --
+  age_band : VARCHAR(20)
+  postcode_sector : VARCHAR(10)
+  accessibility_needs : VARCHAR(100)
+}
+
+entity "PromotionCampaign" as promo {
+  * campaign_id : VARCHAR(10) <<PK>>
+  --
+  * event_id : VARCHAR(10) <<FK>>
+  campaign_channel : VARCHAR(50)
+  discount_code : VARCHAR(30)
+  discount_percentage : DECIMAL(4,2)
+  start_date : DATE
+  end_date : DATE
+  budget : DECIMAL(8,2)
+  open_rate : DECIMAL(5,2)
+  click_rate : DECIMAL(5,2)
+  conversion_rate : DECIMAL(5,2)
+}
+
+entity "TicketSale" as ticket {
+  * ticket_sale_id : VARCHAR(10) <<PK>>
+  --
+  * event_id : VARCHAR(10) <<FK>>
+  * customer_id : VARCHAR(10) <<FK>>
+  campaign_id : VARCHAR(10) <<FK>> (nullable)
+  sale_datetime : DATETIME
+  price_paid : DECIMAL(6,2)
+  ticket_type : VARCHAR(30)
+  booking_channel : VARCHAR(30)
+  attended : BOOLEAN
+  refunded : BOOLEAN
+}
+
+entity "BarOrder" as bar {
+  * bar_order_id : VARCHAR(10) <<PK>>
+  --
+  * event_id : VARCHAR(10) <<FK>>
+  customer_id : VARCHAR(10) <<FK>> (nullable)
+  order_timestamp : DATETIME
+  total_spend : DECIMAL(6,2)
+  order_channel : VARCHAR(30)
+}
+
+entity "BarOrderItem" as baritem {
+  * order_item_id : VARCHAR(10) <<PK>>
+  --
+  * bar_order_id : VARCHAR(10) <<FK>>
+  item_name : VARCHAR(50)
+  quantity : INT
+  unit_price : DECIMAL(6,2)
+}
+
+' ── Relationships ──────────────────────────────────────
+room    ||--o{ event   : "hosts"
+promoter ||--o{ event  : "promotes"
+artist  ||--o{ ea      : "performs at"
+event   ||--o{ ea      : "features"
+event   ||--o{ ticket  : "sells tickets for"
+customer ||--o{ ticket : "purchases"
+event   ||--o{ promo   : "promoted by"
+promo   ||--o{ ticket  : "applied to"
+event   ||--o{ bar     : "generates"
+customer ||--o{ bar    : "places"
+bar     ||--o{ baritem : "contains"
+
+@enduml
