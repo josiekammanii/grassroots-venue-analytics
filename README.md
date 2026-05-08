@@ -22,14 +22,15 @@ All 10 tables are created, populated, queried, and visualised automatically
 
 Option 2 — Run locally
 Requirements:
+
 pip install numpy pandas plotly sqlite3
-# 1. Generate the data
+1. Generate the data
 python data/generate_data.py
 
-# 2. Create the database and schema
+2. Create the database and schema
 sqlite3 GrassrootsVenue.db < schema/schema.sql
 
-# 3. Import all data (in FK-safe order)
+3. Import all data (in FK-safe order)
 sqlite3 GrassrootsVenue.db < sql_imports/import_data.sql
 Then open notebook/GrassrootsVenue_Database.ipynb in Jupyter to run the queries and charts.
 
